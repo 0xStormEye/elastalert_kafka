@@ -1,0 +1,31 @@
+name: Testing Kafka
+type: any
+
+realert:
+  seconds: 0
+
+# Reading ALL indices
+index: "*"
+
+# Contains 'SUCCESS' in tags field.
+# Equals to filtering [tags.keywords is SUCCESS]
+filter:
+- query:
+    query_string:
+      query: "tags: 'SUCCESS'"
+
+# Alert in JSON
+alert_text_type: alert_text_only
+alert_text: '{{"tags": [{}], "message": "Eureka!"}}'
+alert_text_args:
+  - tags
+
+alert:
+  - "elastalert_modules.kafkaAlert.KafkaAlerter"
+
+# Kafka server
+kafka_brokers: "localhost:9091"
+# Kafka producer name in Zookeeper
+kafka_groupID: "elastalert"
+# Kafka topic
+kafka_topic: "elastalert-alert"
