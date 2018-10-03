@@ -15,11 +15,14 @@ This is an **Kafka Alert Plugin** of [Elastalert](https://github.com/Yelp/elasta
 
 ## Usage
 1. You need to specify the path of this library in your rule.
+
 ```
 alert:
   - "elastalert_modules.kafkaAlert.KafkaAlerter"
 ```
+
 2. Configure the Kafka info.
+
 ```
 # Kafka server
 kafka_brokers: "localhost:9091"
@@ -27,17 +30,17 @@ kafka_brokers: "localhost:9091"
 kafka_groupID: "elastalert"
 # Kafka topic
 kafka_topic: "elastalert-alert"
-
-	```
+```
 
 2b. Multiple Kafka topics (Untested)
+
 ```
 alert:
 	- "elastalert_modules.kafkaAlert.KafkaAlerter"
 		- kafka_brokers: "localhost:9091"
 		- kafka_groupID: "elastalert"
 		- kafka_topic: "elastalert-alert"
-	```
+```
 
 ## Example
 
