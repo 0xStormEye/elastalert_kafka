@@ -36,10 +36,10 @@ kafka_topic: "elastalert-alert"
 
 ```
 alert:
-	- "elastalert_modules.kafkaAlert.KafkaAlerter"
-		- kafka_brokers: "localhost:9091"
-		- kafka_groupID: "elastalert"
-		- kafka_topic: "elastalert-alert"
+- "elastalert_modules.kafkaAlert.KafkaAlerter"
+	- kafka_brokers: "localhost:9091"
+	- kafka_groupID: "elastalert"
+	- kafka_topic: "elastalert-alert"
 ```
 
 ## Example
