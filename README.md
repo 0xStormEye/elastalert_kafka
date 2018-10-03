@@ -9,6 +9,7 @@ This is an **Kafka Alert Plugin** of [Elastalert](https://github.com/Yelp/elasta
 
 ## Installation
 
+0. You need `confluent_kafka` library. You can obtain from here: https://github.com/confluentinc/confluent-kafka-python. You will need `librdkafka` library for installing this Python library.
 1. Git Clone this project: `git clone https://github.com/windhamwong/elastalert_kafka.git`
 2. Copy `elastalert_modules/kafkaAlert.py` into the folder `elastalert_modules` under Elastalert folder. (If you can't find this folder under Elastalert, simply just copy the folder `elastalert_modules/` into Elastalert instead.
 3. ...Guess what? Profit!
@@ -36,7 +37,7 @@ kafka_topic: "elastalert-alert"
 
 ```
 alert:
-- "elastalert_modules.kafkaAlert.KafkaAlerter"
+    - "elastalert_modules.kafkaAlert.KafkaAlerter"
 	- kafka_brokers: "localhost:9091"
 	- kafka_groupID: "elastalert"
 	- kafka_topic: "elastalert-alert"
