@@ -8,6 +8,7 @@ class KafkaAlerter(Alerter):
     def __init__(self, rule):
         super(KafkaAlerter, self).__init__(rule)
         self.KAFKA_TOPIC = self.rule['kafka_topic']
+        self.kafka_GROUPID = self.rule['kafka_groupID'] if self.rule.get('kafka_groupID', None) else 'elastalert'
         self.KAFKA_CONFIG = {
             'bootstrap.servers': 'kafka:9092',
             'security.protocol': 'SSL',
@@ -15,7 +16,7 @@ class KafkaAlerter(Alerter):
             'ssl.certificate.location': './certs/elastalert.keystore.pub',
             'ssl.key.location' : './certs/elastalert.keystore.pem',
             'ssl.keystore.password' : 'aaaaaaaaaaaaaaaaaaaaaaaa',
-            'group.id': self.rule['kafka_groupID'] if self.rule.get('kafka_groupID', None) else 'elastalert',
+            'group.id': self.kafka_GROUPID,
 
             'default.topic.config': {
                 'auto.offset.reset': 'earliest'
@@ -44,8 +45,8 @@ class KafkaAlerter(Alerter):
         return {
             'type': 'kafka',
             'brokers': self.KAFKA_CONFIG['bootstrap.servers'],
-            'groupID': self.kafka_groupID,
-            'topic': self.kafka_topic,
+            'groupID': self.kafka_GROUPID,
+            'topic': self.KAFKA_TOPIC,
         }
 
 
