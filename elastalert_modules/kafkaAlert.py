@@ -1,7 +1,5 @@
-from util import elastalert_logger, EAException
 from elastalert.alerts import Alerter
 from confluent_kafka import Producer, KafkaError
-from kafkaSettings import *
 
 class KafkaAlerter(Alerter):
     """ Push a message to Kafka topic """
@@ -30,8 +28,8 @@ class KafkaAlerter(Alerter):
         """ Called once for each message produced to indicate delivery result.
             Triggered by poll() or flush(). """
         if err is not None: # Not breaking
-            elastalert_logger.info('[*] Message Delivery Error: {}'.format(err))
-            elastalert_logger.info('Message Delivery: {}'.format(msg))
+            print('[*] Message Delivery Error: {}'.format(err))
+            print('Message Delivery: {}'.format(msg))
 
     def alert(self, matches):
         try:
@@ -40,9 +38,9 @@ class KafkaAlerter(Alerter):
             self.kafkaInstance.produce(self.KAFKA_TOPIC, body, callback=self.delivery_report)
             self.kafkaInstance.flush()
         except Exception as e:
-            EAException("[*] [KafkaAlert] %s" % str(e))
+            print("[*] [KafkaAlert] %s" % str(e))
 
-        elastalert_logger.info("[*] [KafkaAlert] %s" % str(e))
+        print("[*] [KafkaAlert] %s" % str(e))
 
     def get_info(self):
         return {
