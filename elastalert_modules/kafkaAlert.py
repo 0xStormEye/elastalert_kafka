@@ -40,8 +40,6 @@ class KafkaAlerter(Alerter):
         except Exception as e:
             print("[*] [KafkaAlert] %s" % str(e))
 
-        print("[*] [KafkaAlert] %s" % str(e))
-
     def get_info(self):
         return {
             'type': 'kafka',
