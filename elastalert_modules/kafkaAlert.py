@@ -1,20 +1,30 @@
 from util import elastalert_logger, EAException
 from elastalert.alerts import Alerter
 from confluent_kafka import Producer, KafkaError
+from kafkaSettings import *
 
 class KafkaAlerter(Alerter):
     """ Push a message to Kafka topic """
-    required_options = frozenset(['kafka_brokers', 'kafka_groupID', 'kafka_topic'])
+    required_options = frozenset(['kafka_groupID', 'kafka_topic'])
 
     def __init__(self, rule):
         super(KafkaAlerter, self).__init__(rule)
-        self.kafka_brokers = self.rule['kafka_brokers']
-        self.kafka_groupID = self.rule['kafka_groupID']
-        self.kafka_topic = self.rule['kafka_topic']
-        self.kafkaInstance = Producer({
-            'bootstrap.servers': self.kafka_brokers,
-            'group.id': self.kafka_groupID,
-        })
+        self.KAFKA_TOPIC = self.rule['kafka_topic']
+        self.KAFKA_CONFIG = {
+            'bootstrap.servers': 'kafka:9092',
+            'security.protocol': 'SSL',
+            'ssl.ca.location': './certs/kafka.truststore.pub',
+            'ssl.certificate.location': './certs/elastalert.keystore.pub',
+            'ssl.key.location' : './certs/elastalert.keystore.pem',
+            'ssl.keystore.password' : 'aaaaaaaaaaaaaaaaaaaaaaaa',
+            'group.id': self.rule['kafka_groupID'] if self.rule.get('kafka_groupID', None) else 'elastalert',
+
+            'default.topic.config': {
+                'auto.offset.reset': 'earliest'
+            }
+        }
+
+        self.kafkaInstance = Producer(self.KAFKA_CONFIG)
 
     def delivery_report(self, err, msg):
         """ Called once for each message produced to indicate delivery result.
@@ -27,7 +37,7 @@ class KafkaAlerter(Alerter):
         try:
             body = self.create_alert_body(matches)
             self.kafkaInstance.poll(0)
-            self.kafkaInstance.produce(self.kafka_topic, body, callback=self.delivery_report)
+            self.kafkaInstance.produce(self.KAFKA_TOPIC, body, callback=self.delivery_report)
             self.kafkaInstance.flush()
         except Exception as e:
             EAException("[*] [KafkaAlert] %s" % str(e))
@@ -37,7 +47,7 @@ class KafkaAlerter(Alerter):
     def get_info(self):
         return {
             'type': 'kafka',
-            'brokers': self.kafka_brokers,
+            'brokers': self.KAFKA_CONFIG['bootstrap.servers'],
             'groupID': self.kafka_groupID,
             'topic': self.kafka_topic,
         }
