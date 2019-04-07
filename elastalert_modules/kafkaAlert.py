@@ -4,19 +4,27 @@ from confluent_kafka import Producer, KafkaError
 
 class KafkaAlerter(Alerter):
   """ Push a message to Kafka topic """
-  required_options = frozenset(['kafka_groupID', 'kafka_topic'])
+  required_options = frozenset([
+    'kafka_brokers',
+    'kafka_ca_location',
+    'kafka_pub_location',
+    'kafka_priv_location',
+    'kafka_priv_pass',
+    'kafka_groupID',
+    'kafka_topic',
+  ])
 
   def __init__(self, rule):
     super(KafkaAlerter, self).__init__(rule)
     self.KAFKA_TOPIC = self.rule['kafka_topic']
     self.kafka_GROUPID = self.rule['kafka_groupID'] if self.rule.get('kafka_groupID', None) else 'elastalert'
     self.KAFKA_CONFIG = {
-      'bootstrap.servers': 'kafka:9092',
+      'bootstrap.servers': self.rule['kafka_brokers'],
       'security.protocol': 'SSL',
-      'ssl.ca.location': './certs/kafka.truststore.pub',
-      'ssl.certificate.location': './certs/elastalert.keystore.pub',
-      'ssl.key.location' : './certs/elastalert.keystore.pem',
-      'ssl.keystore.password' : 'aaaaaaaaaaaaaaaaaaaaaaaa',
+      'ssl.ca.location': self.rule['kafka_ca_location'],
+      'ssl.certificate.location': self.rule['kafka_pub_location'],
+      'ssl.key.location' : self.rule['kafka_priv_location'],
+      'ssl.keystore.password' : self.rule['kafka_priv_pass'],
       'group.id': self.kafka_GROUPID,
 
       'default.topic.config': {
@@ -48,7 +56,7 @@ class KafkaAlerter(Alerter):
   def get_info(self):
     return {
       'type': 'kafka',
-      'brokers': self.KAFKA_CONFIG['bootstrap.servers'],
+      'config': self.KAFKA_CONFIG,
       'groupID': self.kafka_GROUPID,
       'topic': self.KAFKA_TOPIC,
     }
